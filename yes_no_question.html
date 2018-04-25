@@ -1,0 +1,55 @@
+<div id="watch-example">
+  <p>
+    Ask a yes/no question:
+    <input v-model="question">
+<!--     v-modelによりinputタグに双方向データバインディングを作成
+ -->  </p>
+  <p>{{answer}}</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script> <!-- axiosライブラリ -->
+
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>  <!-- lodashライブラリ -->
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script>
+
+var watchExampleVM = new Vue({  //Vueインスタンスにelプロパティやdataプロパティを持たせる
+  el: '#watch-example',
+  data: {
+    question:'',
+    answer:'I cannot give you an answer until you ask a question!'
+  },
+  watch: {
+    question: function (newQuestion, oldQuestion){
+      this.answer = 'Waiting for you to stop typing...'
+      this.getAnswer()
+    }
+  },
+  methods: {
+    getAnswer: _.debounce( //_.debounceはlodashの関数
+      function (){
+        if (this.question.indexOf('?') === -1 ){  //jsのindexOfメソッドは対象の文字列の中に指定した文字列が含まれるかどうか
+          //検索し、含まれていた場合は最初の見つかった位置を返す
+          this.answer = 'Questions usually contain a question mark.'
+          return
+        }
+       console.log(this)
+        this.answer = 'Thinking.....'
+        var vm = this
+        axios.get('https://yesno.wtf/api') //ajaxメソッド
+          .then(function(response){
+            vm.answer = _.capitalize(response.data.answer)
+          }) //thenで成功した時の挙動
+             //loadashのcapitalizeメソッドで最初の文字のみ大文字にする
+          .catch( function(error){
+            vm.answer = 'Error! Could not reach the API.' + error
+          }) //catchで失敗した時の挙動
+      },
+        500
+      )
+  }
+})               //vue.jsにはwatch,computed,methodなどのプロパティがある
+</script>
