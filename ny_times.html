@@ -9,10 +9,14 @@
   <body>
     <div class="container" id="app">
       <h3 class="text-center">VueNews</h3>
+ここでv-forでprocessedPostsという配列から取り出して繰り返す
 <div class="row" v-for="posts in processedPosts">
+  ここではv-forでpostsという配列を繰り返す
       <div class="columns medium-3" v-for="post in posts">
+    ここではpost< posts <processedPosts の関係になっている
     <div class="card">
       <div class="card-divider">
+        v-for="post in posts"となっているのでpost.titleでアクセスできる
         {{ post.title }}
       </div>
       <a :href="post.url" target="_blank"><img :src="post.image_url"></a>
@@ -46,13 +50,13 @@ const vm = new Vue({
   data: {
     results: []
   },
-  mounted(){
+  mounted(){ //インスタンスがマウントされた直後に呼ばれる
     this.getPosts("home");
   },
-  methods: {
+  methods: { //Vueインスタンスに組み込まれるものをこの中に記述
     getPosts(section){
       let url = buildUrl(section);
-      axios.get(url)
+      axios.get(url) //ajaxメソッド的な
       .then((response) => {
         this.results = response.data.results;
       })
@@ -71,7 +75,7 @@ const vm = new Vue({
 
       let i,j,chunkedArray = [], chunk = 4;
       for (i = 0, j= 0; i <posts.length; i += chunk, j++){
-        chunkedArray[i] = posts.slice(i,i+ chunk);
+        chunkedArray[i] = posts.slice(i,i+ chunk);//sliceメソッドは指定された範囲の部分文字列を返す
       }
       return chunkedArray;
     }
